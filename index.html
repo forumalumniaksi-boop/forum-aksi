@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pendaftaran Anggota Forum AKSI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#172033}
+.container{max-width:720px;margin:0 auto;padding:20px}
+.card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+h1{font-size:25px;text-align:center;margin:0 0 8px}
+.subtitle{text-align:center;line-height:1.5;color:#596579;margin-bottom:22px}
+label{display:block;font-weight:700;margin:18px 0 8px}
+.req{color:#c62828}
+input,textarea,select{width:100%;padding:13px;border:1px solid #ccd4df;border-radius:10px;font-size:16px}
+textarea{min-height:90px;resize:vertical}
+.hint{font-size:13px;color:#697586;margin-top:5px;line-height:1.45}
+.camera-box{background:#111;border-radius:14px;overflow:hidden;position:relative}
+video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+canvas{display:none}
+.preview{display:none;width:100%;aspect-ratio:4/3;object-fit:cover}
+.buttons{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+button{border:0;border-radius:10px;padding:13px 16px;font-weight:700;font-size:15px;cursor:pointer}
+.primary{background:#1769aa;color:#fff}.secondary{background:#e8eef5;color:#172033}
+.submit{width:100%;margin-top:24px;background:#0b7a53;color:#fff;font-size:17px}
+button:disabled{opacity:.55;cursor:not-allowed}
+.status{margin-top:14px;padding:12px;border-radius:10px;display:none;line-height:1.45}
+.ok{background:#e8f6ef;color:#146c43}.err{background:#fdecec;color:#a12626}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card">
+<h1>PENDAFTARAN ANGGOTA FORUM AKSI</h1>
+<div class="subtitle">
+Assalamualaikum, Selamat datang di Forum Alumni Kampus Seluruh Indonesia (Forum AKSI).<br>
+Silakan mengisi data dengan benar untuk pendaftaran anggota Forum AKSI.
+</div>
+
+<form id="regForm">
+<label>1. Nama Lengkap <span class="req">*</span></label>
+<input name="nama" required>
+
+<label>2. Foto Selfie / Foto Profil <span class="req">*</span></label>
+<div class="camera-box">
+<video id="video" autoplay playsinline></video>
+<img id="preview" class="preview" alt="Preview foto">
+<canvas id="canvas"></canvas>
+</div>
+<div class="buttons">
+<button type="button" class="primary" id="startBtn">📷 NYALAKAN KAMERA</button>
+<button type="button" class="primary" id="captureBtn" disabled>📸 AMBIL FOTO</button>
+<button type="button" class="secondary" id="retryBtn" disabled>🔄 ULANGI</button>
+</div>
+<div class="hint">Foto wajib diambil langsung menggunakan kamera. Tidak tersedia pilihan untuk mengambil foto dari galeri.</div>
+
+<label>3. Alamat email <span class="req">*</span></label>
+<input type="email" name="email" required>
+
+<label>4. Alamat Lengkap <span class="req">*</span></label>
+<textarea name="alamat" required></textarea>
+
+<label>5. No. WhatsApp <span class="req">*</span></label>
+<input name="wa" type="tel" required>
+
+<label>6. Tahun Lulus SMA/SMK <span class="req">*</span></label>
+<input name="sma" inputmode="numeric" placeholder="Contoh: 1984" required>
+
+<label>7. Tahun Masuk, Tahun Keluar, Program Studi, Fakultas, Univ/PT Untuk Diploma</label>
+<textarea name="diploma" placeholder="Contoh: 2000, 2004, Manajemen, FEB, UI"></textarea>
+<div class="hint">Tidak perlu diisi bila tidak mengikuti. Bisa kuliah di beberapa Univ.</div>
+
+<label>8. Tahun Masuk, Tahun Keluar, Program Studi, Fakultas, Univ/PT Untuk S1</label>
+<textarea name="s1" placeholder="Contoh: 2000, 2004, Arsitektur, SAPPK, ITB"></textarea>
+<div class="hint">Tidak perlu diisi bila tidak mengikuti. Bisa kuliah di beberapa Univ.</div>
+
+<label>9. Tahun Masuk, Tahun Keluar, Program Studi, Fakultas, Univ/PT Untuk S2</label>
+<textarea name="s2" placeholder="Contoh: 2005, 2007, MBA, SBM, ITB"></textarea>
+<div class="hint">Tidak perlu diisi bila tidak mengikuti. Bisa kuliah di beberapa Univ.</div>
+
+<label>10. Tahun Masuk, Tahun Keluar, Program Studi, Fakultas, Univ/PT Untuk S3</label>
+<textarea name="s3" placeholder="Contoh: 2010, 2014, Ilmu Ekonomi, FEB, UI"></textarea>
+<div class="hint">Tidak perlu diisi bila tidak mengikuti. Bisa kuliah di beberapa Univ.</div>
+
+<label>11. Profesi / Pekerjaan <span class="req">*</span></label>
+<input name="profesi" required>
+
+<label>12. Status Keanggotaan <span class="req">*</span></label>
+<select name="status" required>
+<option value="">-- Pilih --</option>
+<option>Anggota Baru</option>
+<option>Anggota Lama / Registrasi Ulang</option>
+</select>
+
+<label>13. Tujuan / Motivasi Bergabung di Forum AKSI <span class="req">*</span></label>
+<textarea name="motivasi" required></textarea>
+
+<label>14. Info Forum AKSI dari siapa? (Referensi) <span class="req">*</span></label>
+<input name="referensi" required>
+
+<button class="submit" id="submitBtn" type="submit">KIRIM PENDAFTARAN</button>
+<div id="status" class="status"></div>
+</form>
+</div>
+</div>
+
+<script>
+// GANTI nilai ini dengan URL Web App Apps Script Anda yang berakhiran /exec
+const APPS_SCRIPT_URL = "GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_ANDA";
+
+const video=document.getElementById("video");
+const preview=document.getElementById("preview");
+const canvas=document.getElementById("canvas");
+const startBtn=document.getElementById("startBtn");
+const captureBtn=document.getElementById("captureBtn");
+const retryBtn=document.getElementById("retryBtn");
+const form=document.getElementById("regForm");
+const submitBtn=document.getElementById("submitBtn");
+const statusBox=document.getElementById("status");
+let stream=null, photoData="";
+
+function showStatus(msg, ok=false){
+  statusBox.textContent=msg;
+  statusBox.className="status "+(ok?"ok":"err");
+  statusBox.style.display="block";
+}
+
+startBtn.onclick=async()=>{
+  try{
+    if(stream) stream.getTracks().forEach(t=>t.stop());
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:{ideal:"user"}},
+      audio:false
+    });
+    video.srcObject=stream;
+    video.style.display="block";
+    preview.style.display="none";
+    captureBtn.disabled=false;
+    retryBtn.disabled=true;
+    showStatus("Kamera aktif. Silakan ambil foto.", true);
+  }catch(e){
+    showStatus("Kamera tidak dapat diakses. Pastikan izin kamera diberikan pada browser.");
+  }
+};
+
+captureBtn.onclick=()=>{
+  const w=640, h=Math.round(w*(video.videoHeight/video.videoWidth || 3/4));
+  canvas.width=w; canvas.height=h;
+  const ctx=canvas.getContext("2d");
+  ctx.drawImage(video,0,0,w,h);
+  photoData=canvas.toDataURL("image/jpeg",0.72);
+  preview.src=photoData;
+  preview.style.display="block";
+  video.style.display="none";
+  captureBtn.disabled=true;
+  retryBtn.disabled=false;
+  if(stream) stream.getTracks().forEach(t=>t.stop());
+  showStatus("Foto berhasil diambil. Anda dapat mengirim pendaftaran.", true);
+};
+
+retryBtn.onclick=()=>{
+  photoData="";
+  preview.style.display="none";
+  video.style.display="block";
+  startBtn.click();
+};
+
+form.onsubmit=async(e)=>{
+  e.preventDefault();
+  if(!photoData){showStatus("Foto selfie wajib diambil terlebih dahulu.");return;}
+  if(!APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/")){
+    showStatus("URL Apps Script belum dipasang pada halaman ini.");
+    return;
+  }
+
+  submitBtn.disabled=true;
+  submitBtn.textContent="MENGIRIM...";
+  const fd=new FormData(form);
+  const payload=new URLSearchParams();
+  for(const [k,v] of fd.entries()) payload.append(k,v);
+  payload.append("foto",photoData);
+
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
+      body:payload.toString()
+    });
+    showStatus("Pendaftaran telah dikirim. Data akan diverifikasi oleh Admin Forum AKSI.",true);
+    form.reset();
+    photoData="";
+    preview.style.display="none";
+    video.style.display="block";
+    captureBtn.disabled=true;
+    retryBtn.disabled=true;
+  }catch(err){
+    showStatus("Pengiriman gagal. Silakan coba lagi.");
+  }finally{
+    submitBtn.disabled=false;
+    submitBtn.textContent="KIRIM PENDAFTARAN";
+  }
+};
+</script>
+</body>
+</html>
